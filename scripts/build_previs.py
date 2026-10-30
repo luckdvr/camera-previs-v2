@@ -64,19 +64,19 @@ def build(c):
     if c['version']==4:
         vendor=ASSETS/'legacy/assets/engine/vendor'
         values={'CONFIG':json.dumps(c,ensure_ascii=False,separators=(',',':')).replace('<','\\u003c'),
-                'THREE':'window.THREE=(function(exports){'+(vendor/'three.cjs').read_text()+';return exports;})({});',
-                'TIMELINE':(ASSETS/'timeline.js').read_text(),
-                'LICENSE':html.escape((vendor/'THREE-LICENSE.txt').read_text())}
+                'THREE':'window.THREE=(function(exports){'+(vendor/'three.cjs').read_text(encoding='utf-8')+';return exports;})({});',
+                'TIMELINE':(ASSETS/'timeline.js').read_text(encoding='utf-8'),
+                'LICENSE':html.escape((vendor/'THREE-LICENSE.txt').read_text(encoding='utf-8'))}
         for name in ['MODEL','PROXIES','MP4','ENGINE']:
-            values[name]=(ASSETS/'sequence'/f'{name.lower()}.js').read_text()
-        return re.sub(r'<!--(CONFIG|THREE|TIMELINE|MODEL|PROXIES|MP4|ENGINE|LICENSE)-->',lambda m:values[m[1]],(ASSETS/'sequence/template.html').read_text())
+            values[name]=(ASSETS/'sequence'/f'{name.lower()}.js').read_text(encoding='utf-8')
+        return re.sub(r'<!--(CONFIG|THREE|TIMELINE|MODEL|PROXIES|MP4|ENGINE|LICENSE)-->',lambda m:values[m[1]],(ASSETS/'sequence/template.html').read_text(encoding='utf-8'))
     if c['version']!=3: return legacy.build_html(c)
     engine=ASSETS/'legacy/assets/engine'
     values={'CONFIG':json.dumps(c,ensure_ascii=False,separators=(',',':')).replace('<','\\u003c'),
-        'THREE':'window.THREE=(function(exports){'+(engine/'vendor/three.cjs').read_text()+';return exports;})({});',
-        'TIMELINE':(ASSETS/'timeline.js').read_text(), 'ENGINE':(ASSETS/'engine.js').read_text(),
-        'VIDEO':(engine/'video-export.js').read_text(), 'LICENSE':html.escape((engine/'vendor/THREE-LICENSE.txt').read_text())}
-    return re.sub(r'<!--(CONFIG|THREE|TIMELINE|ENGINE|VIDEO|LICENSE)-->',lambda m:values[m[1]],(ASSETS/'template.html').read_text())
+        'THREE':'window.THREE=(function(exports){'+(engine/'vendor/three.cjs').read_text(encoding='utf-8')+';return exports;})({});',
+        'TIMELINE':(ASSETS/'timeline.js').read_text(encoding='utf-8'), 'ENGINE':(ASSETS/'engine.js').read_text(encoding='utf-8'),
+        'VIDEO':(engine/'video-export.js').read_text(encoding='utf-8'), 'LICENSE':html.escape((engine/'vendor/THREE-LICENSE.txt').read_text(encoding='utf-8'))}
+    return re.sub(r'<!--(CONFIG|THREE|TIMELINE|ENGINE|VIDEO|LICENSE)-->',lambda m:values[m[1]],(ASSETS/'template.html').read_text(encoding='utf-8'))
 
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('input',type=Path)

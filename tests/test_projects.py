@@ -17,7 +17,7 @@ class Projects(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.tmp=Path(tempfile.mkdtemp(prefix='camera-previs-tests-'))
-        cls.example=json.loads((ROOT/'examples/vehicle-v4.json').read_text())
+        cls.example=json.loads((ROOT/'examples/vehicle-v4.json').read_text(encoding='utf-8'))
 
     def check_bad(self,change):
         c=copy.deepcopy(self.example);change(c)
@@ -49,7 +49,7 @@ class Projects(unittest.TestCase):
     def test_html_roundtrip_escapes_script(self):
         c=copy.deepcopy(self.example);c['title']='</script><script>throw Error("should not execute")</script>'
         c=b.validate(c);page=b.build(c);self.assertNotIn('<script>throw Error',page)
-        path=self.tmp/'safe.html';path.write_text(page)
+        path=self.tmp/'safe.html';path.write_text(page,encoding='utf-8')
         self.assertEqual(b.read(path),c)
 
     def test_legacy_examples(self):
@@ -62,12 +62,12 @@ class Projects(unittest.TestCase):
         for name in ['vehicle','dialogue','fight']:
             out=self.tmp/name
             subprocess.run([sys.executable,str(ROOT/'scripts/build_previs.py'),str(ROOT/f'examples/{name}-v4.json'),'--out',str(out)],check=True,capture_output=True)
-            manifests.append(json.loads((out/'build-info.json').read_text())['engine_files'])
+            manifests.append(json.loads((out/'build-info.json').read_text(encoding='utf-8'))['engine_files'])
         self.assertEqual(manifests[0],manifests[1]);self.assertEqual(manifests[1],manifests[2])
 
     def test_refuses_output_overwrite(self):
-        out=self.tmp/'existing';out.mkdir();sentinel=out/'keep.txt';sentinel.write_text('original')
+        out=self.tmp/'existing';out.mkdir();sentinel=out/'keep.txt';sentinel.write_text('original',encoding='utf-8')
         r=subprocess.run([sys.executable,str(ROOT/'scripts/build_previs.py'),str(ROOT/'examples/vehicle-v4.json'),'--out',str(out)],capture_output=True)
-        self.assertNotEqual(r.returncode,0);self.assertEqual(sentinel.read_text(),'original');self.assertEqual(list(out.iterdir()),[sentinel])
+        self.assertNotEqual(r.returncode,0);self.assertEqual(sentinel.read_text(encoding='utf-8'),'original');self.assertEqual(list(out.iterdir()),[sentinel])
 
 if __name__=='__main__':unittest.main()
