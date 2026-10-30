@@ -1,0 +1,4 @@
+interface:
+  display_name: "连续运镜预演 v2"
+  short_description: "从剧本或参考成片生成连续运镜预演，支持移动主体、交互改参和画中画展示"
+  default_prompt: "用 $camera-previs-v2 根据这段提示词和参考视频制作可调整的运镜预演，并导出原片内小画中画的展示视频。"

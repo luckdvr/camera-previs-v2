@@ -1,0 +1,2 @@
+# Keep the upstream library byte-for-byte; its original whitespace is preserved.
+assets/legacy/assets/engine/vendor/three.cjs linguist-vendored=true -whitespace

@@ -1,0 +1,11 @@
+{
+  "title": "双人对话运镜",
+  "scene": "两人相对站立，先交代空间，再靠近其中一人的反应。",
+  "cast": ["甲", "乙"],
+  "dialogue": false,
+  "shots": [
+    {"name": "双人全景", "view": "wide", "dur": 4, "action": "交代两人之间的距离。"},
+    {"name": "缓慢靠近", "view": "single", "target": "甲", "move": "push", "travel": 0.25, "dur": 5, "action": "逐渐靠近甲，保留乙所在的方向。"},
+    {"name": "过肩反应", "view": "over", "target": "乙", "over": "甲", "dur": 3, "action": "越过甲的肩膀观察乙。"}
+  ]
+}
