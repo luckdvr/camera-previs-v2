@@ -6,7 +6,11 @@
 
 ## 使用
 
-把整个仓库目录安装为 `skills/camera-previs-v2`，向 AI 提供视频、剧本或提示词，例如：
+把仓库链接发给 Codex，并附上这一句即可开始安装：
+
+> 请把 https://github.com/luckdvr/camera-previs-v2 安装为 Skill，按 SKILL.md 自动检查和安装缺失依赖，完成后验证环境可用。
+
+安装完成后向 AI 提供视频、剧本或提示词，例如：
 
 > 用 $camera-previs-v2，根据这个视频做简化运镜预演。保留画幅和镜头节奏，输出可修改的 HTML、项目参数和 MP4。
 
@@ -16,6 +20,8 @@
 
 AI 负责看视频、读剧本、选择模型与机位并生成 JSON；构建器不直接理解自然语言。网页操作、曲线插值和渲染不调用模型 API，不需要另配服务密钥。
 
+Skill 会让 Codex 先运行环境准备：复用已有 Python、FFmpeg 和浏览器，只安装缺项，记录可执行文件路径，并实际检测 WebGL 与视频编码。常规流程不需要自己配置；遇到系统权限或网络限制，仍需按系统提示授权。支持 Homebrew、WinGet 和 Debian/Ubuntu apt-get 的安装路径；macOS 已实测，Windows/Linux 安装分支已做模拟测试。详见 [自动准备环境](references/setup.md)。
+
 ## 可直接运行的示例
 
 需要 Python 3.8+，无 Python 第三方包依赖。HTML 内含 Three.js，支持 WebGL 的现代浏览器可离线打开。
@@ -23,12 +29,13 @@ AI 负责看视频、读剧本、选择模型与机位并生成 JSON；构建器
 ```sh
 git clone https://github.com/luckdvr/camera-previs-v2.git
 cd camera-previs-v2
+bash scripts/setup.sh --install
 python3 scripts/build_previs.py examples/dialogue-v4.json --out output/dialogue
 python3 scripts/build_previs.py examples/vehicle-v4.json --out output/vehicle
 python3 scripts/build_previs.py examples/fight-v4.json --out output/fight
 ```
 
-打开对应输出目录中的 `preview.html`。每次生成使用新目录；脚本拒绝覆盖已有结果。
+Windows 使用 `powershell -NoProfile -File scripts/setup.ps1 -Install`。Codex 应把后续示例中的 `python3` 换成检查报告的 `tools.python.path`，不依赖当前 PATH。打开对应输出目录中的 `preview.html`。每次生成使用新目录；脚本拒绝覆盖已有结果。
 
 | 共享能力 | 用途 |
 | --- | --- |
@@ -40,7 +47,7 @@ python3 scripts/build_previs.py examples/fight-v4.json --out output/fight
 | 网页编辑 | 时间拖动、慢放、拖机位、改关键点与主体位置、撤销/重做 |
 | 保存与输出 | HTML、JSON、同步提示词、逐帧 MP4、实时 WebM |
 
-MP4 导出需要浏览器支持 WebCodecs AVC；不支持时可使用 WebM。参考视频抽帧脚本另需 FFmpeg/FFprobe。无需特定浏览器插件。
+MP4 逐帧导出需要浏览器支持 WebCodecs AVC；不支持时可实时导出 WebM，再用 `scripts/convert_video.py INPUT.webm --out NEW.mp4` 转换。实时录制不能保证逐帧精度。FFmpeg/FFprobe 会由环境入口检查和准备，无需特定浏览器插件。
 
 ## 参数复用
 
@@ -83,7 +90,7 @@ python3 -m unittest discover -s tests -v
 node tests/model.test.cjs
 ```
 
-检查覆盖输出保护、HTML配置提取、非法参数、插值、切镜边界、提示词同步、新旧版本，以及不同题材使用相同引擎。还应在浏览器检查实际构图、编辑与视频导出；单元检查不等于视觉验收。
+检查覆盖输出保护、HTML配置提取、非法参数、插值、切镜边界、提示词同步、新旧版本，以及不同题材使用相同引擎；新增依赖发现、只安装缺项、安装失败、重复运行和跨平台安装计划的测试。测试模拟缺项，不会真的安装或卸载软件。还应在浏览器检查实际构图、编辑与视频导出；单元检查不等于视觉验收。
 
 从已提交版本生成分享包：
 

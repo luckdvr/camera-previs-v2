@@ -1,0 +1,17 @@
+<!doctype html><meta charset="utf-8"><title>Camera Previs capability check</title><pre id="result">{"complete":false}</pre>
+<script>
+(async()=>{
+const result={complete:false,webgl:false,avc:false,webm:false};let encoder;
+try{
+ const gl=document.createElement('canvas').getContext('webgl2');result.webgl=!!gl;
+ if(gl){gl.clearColor(.2,.3,.4,1);gl.clear(gl.COLOR_BUFFER_BIT);const pixel=new Uint8Array(4);gl.readPixels(0,0,1,1,gl.RGBA,gl.UNSIGNED_BYTE,pixel);result.webgl=gl.getError()===gl.NO_ERROR&&pixel[3]===255;}
+ result.webm=typeof MediaRecorder!=='undefined'&&MediaRecorder.isTypeSupported('video/webm;codecs=vp8');
+ if(typeof VideoEncoder!=='undefined'){
+  const config={codec:'avc1.420033',width:320,height:180,bitrate:250000,framerate:25,latencyMode:'realtime',avc:{format:'avc'}};
+  if((await VideoEncoder.isConfigSupported(config)).supported){let chunks=0,failed=false;encoder=new VideoEncoder({output:()=>chunks++,error:e=>{failed=true;result.encoder_error=e.message;}});encoder.configure(config);
+   const canvas=document.createElement('canvas');canvas.width=320;canvas.height=180;canvas.getContext('2d').fillRect(0,0,320,180);const frame=new VideoFrame(canvas,{timestamp:0,duration:40000});encoder.encode(frame,{keyFrame:true});frame.close();await encoder.flush();result.avc=chunks===1&&!failed;
+  }
+ }
+}catch(e){result.error=e.message;}finally{if(encoder&&encoder.state!=='closed')encoder.close();result.complete=true;document.getElementById('result').textContent=JSON.stringify(result);const report=new URLSearchParams(location.search).get('report');if(report)await fetch(report,{method:'POST',body:JSON.stringify(result)});}
+})();
+</script>
