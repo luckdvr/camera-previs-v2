@@ -1,0 +1,16 @@
+{
+  "version": 4, "title": "双人对话 · 剧本示例", "fps": 25, "size": [960,540],
+  "models": {"person":{"type":"person","pose":"sit"},"chair":{"type":"chair"},"table":{"type":"table"}},
+  "scenes": {"room":{"environment":"room","objects":[
+    {"id":"a","model":"person","p":[-1.15,0,0],"r":[0,-90,0]},
+    {"id":"b","model":"person","p":[1.15,0,0],"r":[0,90,0]},
+    {"id":"seatA","model":"chair","p":[-1.15,0,0],"r":[0,-90,0]},
+    {"id":"seatB","model":"chair","p":[1.15,0,0],"r":[0,90,0]},
+    {"id":"table","model":"table"}
+  ]}},
+  "shots":[
+    {"name":"两人隔桌对话","duration":4,"scene":"room","note":"先交代两人的距离，缓慢推近。","camera":{"keys":[{"t":0,"p":[0,1.8,-5],"look":[0,1,0],"fov":42},{"t":4,"p":[0,1.6,-3.8],"look":[0,1.1,0],"fov":42}]}},
+    {"name":"甲的近景","duration":2,"scene":"room","note":"甲说出决定，留出对方的视线方向。","camera":{"keys":[{"t":0,"p":[0.2,1.4,-1.4],"look":[-1.15,1.24,0],"fov":37}]}},
+    {"name":"乙的反应","duration":2,"scene":"room","note":"反打乙，维持对话轴线。","camera":{"keys":[{"t":0,"p":[-0.2,1.4,-1.4],"look":[1.15,1.24,0],"fov":37}]}}
+  ]
+}

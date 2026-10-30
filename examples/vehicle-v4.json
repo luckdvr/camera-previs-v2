@@ -1,0 +1,6 @@
+{
+  "version":4,"title":"车辆跟拍 · 参数示例","fps":25,"size":[960,540],
+  "models":{"sedan":{"type":"car"},"marker":{"type":"group","parts":[{"type":"cylinder","s":[0.15,2,0.15],"p":[0,1,0]},{"type":"box","s":[1.2,0.5,0.1],"p":[0,2,0]}]}},
+  "scenes":{"road":{"environment":"road","objects":[{"id":"car","model":"sedan"},{"id":"sign","model":"marker","p":[5,0,-20]}]}},
+  "shots":[{"name":"侧前方跟随并拉开","duration":10,"scene":"road","motion":{"car":[{"t":0,"p":[0,0,0]},{"t":10,"p":[0,0,-60]}]},"camera":{"follow":"car","keys":[{"t":0,"p":[-3,1,-4],"look":[0,0.8,0],"fov":48},{"t":5,"p":[-5,2,-7],"look":[0,0.8,0],"fov":48},{"t":10,"p":[-8,5,-12],"look":[0,0.8,0],"fov":48}]}}]
+}

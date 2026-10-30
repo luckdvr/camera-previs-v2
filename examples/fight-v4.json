@@ -1,0 +1,10 @@
+{
+  "version":4,"title":"进逼与闪避 · 提示词示例","fps":25,"size":[960,540],
+  "models":{"fighterA":{"type":"person","color":"#8a9691"},"fighterB":{"type":"person","color":"#a6a49c"}},
+  "scenes":{"stage":{"environment":"ground","objects":[{"id":"a","model":"fighterA","p":[-1.4,0,0],"r":[0,-90,0]},{"id":"b","model":"fighterB","p":[1.4,0,0],"r":[0,90,0]}]}},
+  "shots":[{"name":"进逼、出拳、闪避、退开","duration":8,"scene":"stage","note":"双方进退，甲出拳，乙闪避；用预设动作确认节奏，不作为精确接触动画。",
+    "camera":{"keys":[{"t":0,"p":[0,1.7,-6],"look":[0,1,0],"fov":45},{"t":4,"p":[-2,1.6,-5],"look":[0,1,0],"fov":43},{"t":8,"p":[1,1.9,-6],"look":[0,1,0],"fov":45}]},
+    "motion":{"a":[{"t":0,"p":[-1.4,0,0]},{"t":2,"p":[-0.6,0,0]},{"t":4,"p":[-0.55,0,0.1]},{"t":6,"p":[-1,0,0.1]},{"t":8,"p":[-1.4,0,0]}],"b":[{"t":0,"p":[1.4,0,0]},{"t":2,"p":[0.7,0,0]},{"t":4,"p":[0.8,0,0.3]},{"t":6,"p":[1.1,0,0.1]},{"t":8,"p":[1.4,0,0]}]},
+    "actions":{"a":[{"t":0,"duration":2,"name":"walk"},{"t":2,"duration":1.2,"name":"punch"},{"t":4,"duration":1.2,"name":"kick"},{"t":5.2,"duration":2.8,"name":"walk"}],"b":[{"t":0,"duration":2,"name":"walk"},{"t":2.12,"duration":1.2,"name":"duck"},{"t":3.4,"duration":1,"name":"punch"},{"t":4.4,"duration":3.6,"name":"walk"}]}
+  }]
+}

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build an offline v3 continuous previs, or open a legacy v2/compact project."""
+"""Build an offline v4 generic previs; also accepts v3 and v2/compact projects."""
 import argparse
 import html
 import importlib.util
@@ -8,14 +8,21 @@ import math
 from pathlib import Path
 import re
 import sys
+import hashlib
 sys.dont_write_bytecode = True
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = ROOT / 'assets'
 spec = importlib.util.spec_from_file_location('legacy_builder', ASSETS/'legacy/scripts/build_previs.py')
 legacy = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(legacy)
+seq_spec = importlib.util.spec_from_file_location('sequence_model', ROOT/'scripts/sequence_model.py')
+sequence = importlib.util.module_from_spec(seq_spec)
+seq_spec.loader.exec_module(sequence)
 
 def validate(c):
+    if not isinstance(c,dict): raise ValueError('Project must be a JSON object')
+    if c.get('version') == 4:
+        return sequence.validate(c)
     if c.get('version') != 3:
         return legacy.validate(c if c.get('version') == 2 else legacy.expand(c))
     duration = legacy.num(c.get('duration'), 'duration', .1, 600)
@@ -54,6 +61,15 @@ def read(path):
     return validate(json.loads(raw))
 
 def build(c):
+    if c['version']==4:
+        vendor=ASSETS/'legacy/assets/engine/vendor'
+        values={'CONFIG':json.dumps(c,ensure_ascii=False,separators=(',',':')).replace('<','\\u003c'),
+                'THREE':'window.THREE=(function(exports){'+(vendor/'three.cjs').read_text()+';return exports;})({});',
+                'TIMELINE':(ASSETS/'timeline.js').read_text(),
+                'LICENSE':html.escape((vendor/'THREE-LICENSE.txt').read_text())}
+        for name in ['MODEL','PROXIES','MP4','ENGINE']:
+            values[name]=(ASSETS/'sequence'/f'{name.lower()}.js').read_text()
+        return re.sub(r'<!--(CONFIG|THREE|TIMELINE|MODEL|PROXIES|MP4|ENGINE|LICENSE)-->',lambda m:values[m[1]],(ASSETS/'sequence/template.html').read_text())
     if c['version']!=3: return legacy.build_html(c)
     engine=ASSETS/'legacy/assets/engine'
     values={'CONFIG':json.dumps(c,ensure_ascii=False,separators=(',',':')).replace('<','\\u003c'),
@@ -69,6 +85,12 @@ def main():
     if args.out:
         page=build(c);args.out.mkdir(parents=True,exist_ok=False)
         (args.out/'preview.html').write_text(page,'utf-8');(args.out/'project.json').write_text(json.dumps(c,ensure_ascii=False,indent=2),'utf-8')
+        if c['version']==4:
+            files=['assets/sequence/'+n for n in ['template.html','model.js','proxies.js','mp4.js','engine.js']]+['assets/timeline.js','assets/legacy/assets/engine/vendor/three.cjs']
+            info={'version':4,'engine':'generic-sequence','duration':c['duration'],'frames':round(c['duration']*c['fps']),
+                  'project_sha256':hashlib.sha256((args.out/'project.json').read_bytes()).hexdigest(),
+                  'engine_files':{f:hashlib.sha256((ROOT/f).read_bytes()).hexdigest() for f in files}}
+            (args.out/'build-info.json').write_text(json.dumps(info,indent=2),'utf-8')
     if args.extract_json:
         with args.extract_json.open('x',encoding='utf-8') as f:json.dump(c,f,ensure_ascii=False,indent=2)
     print(json.dumps({'version':c['version'],'output':str(args.out) if args.out else None},ensure_ascii=False))
